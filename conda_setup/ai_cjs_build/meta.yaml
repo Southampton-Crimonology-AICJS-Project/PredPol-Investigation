@@ -1,0 +1,29 @@
+package:
+  name: ai_cjs
+  version: "v1.0"
+
+source:
+  git_rev: "v1.0"
+  git_url: git@github.com:Southampton-RSG/PredictivePolicing.git
+
+requirements:
+  build:
+    - python=3.7.*
+    - setuptools
+    - cartopy
+    - conda-build
+    - conda-verify
+    - geopandas
+    - matplotlib
+    - mpi4py
+    - numba
+    - numpy
+    - pandas
+    - requests
+    - scipy
+    - seaborn
+    - shapely
+    - scikit-learn
+
+  run:
+    - python

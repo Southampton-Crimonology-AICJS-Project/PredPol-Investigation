@@ -1,0 +1,22 @@
+name: ai-cjs-env
+channels:
+  - conda-forge
+  - anaconda
+dependencies:
+  - python~=3.7.*
+  - cartopy
+  - conda-build
+  - conda-verify
+  - geopandas
+  - geoplot
+  - matplotlib
+  - mpi4py
+  - numba
+  - numpy
+  - pandas
+  - requests
+  - scipy
+  - seaborn
+  - setuptools
+  - shapely
+  - scikit-learn

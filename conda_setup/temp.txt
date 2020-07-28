@@ -1,0 +1,12 @@
+#Required but causing issues
+# osgridconverter and postcodes are installed in install.sh
+
+
+#from yaml
+- osgridconverter
+- postcodes_io
+- geoplot
+- time
+
+#from setup
+['osgridconverter', 'postcodes_io', 'time', 'geoplot']

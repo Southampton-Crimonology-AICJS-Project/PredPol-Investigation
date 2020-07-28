@@ -1,0 +1,43 @@
+#!/bin/bash
+# So the data processing for the api call on the login node
+
+INPUT=( $* )
+
+MONTHARR="${INPUT[19]}"
+YEARARR="${INPUT[21]}"
+LATLONG="${INPUT[17]}"
+CORES="${INPUT[8]}"
+SIDE="${INPUT[1]}"
+
+# strip spaces from inputs
+MONTHARR="$(echo -e "${MONTHARR}" | tr -d '[:space:]')"
+YEARARR="$(echo -e "${YEARARR}" | tr -d '[:space:]')"
+LATLONG="$(echo -e "${LATLONG}" | tr -d '[:space:]')"
+
+echo "${INPUT[@]}"
+echo "$MONTHARR"
+echo "$YEARARR"
+echo "$LATLONG"
+echo "$CORES"
+echo "$SIDE"
+
+
+
+# Set up python environment ============================================================================================
+# Remove the python 2.7 installation to allow conda to load up ai-cjs and the python version within
+module unload python/2.7.5
+# Using conda for venv
+module load conda/4.4.0
+eval "$(conda shell.bash hook)"
+# activate the virtual environment with the required dependencies installed
+conda activate ai-cjs-env
+
+
+python /home/pjg1c19/AI_CJS/ai_cjs/data_processing/data_police_api.py "$MONTHARR" "$YEARARR" "$LATLONG" "$CORES" "$SIDE"
+
+INPUTSINGLE="${INPUT[@]}"
+qsub /home/pjg1c19/AI_CJS/bash_pbs/paper_jobs/mutable_sub -F "$INPUTSINGLE" -l nodes=1:ppn="$CORES"
+
+
+ls temp/ | tr -d '[mutable_sub.o]' | xargs -n 1 echo 'mutable_sub.e' | xargs -n 2 echo | xargs -n 1 tr -d '[:space:]'
+

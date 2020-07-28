@@ -1,0 +1,24 @@
+{
+  "info": {
+    "subdir": "linux-64"
+  },
+  "packages": {
+    "ai_cjs-v1Test7-py37_0.tar.bz2": {
+      "build": "py37_0",
+      "build_number": 0,
+      "depends": [
+        "python >=3.7,<3.8.0a0"
+      ],
+      "md5": "d454df720f3a18a6ebfd33c8b094540a",
+      "name": "ai_cjs",
+      "sha256": "57af45b3bcccfc5d28c56c43d0d0c14b444f9e4445e785878267e8724d8dd1e4",
+      "size": 54806,
+      "subdir": "linux-64",
+      "timestamp": 1594811080610,
+      "version": "v1Test7"
+    }
+  },
+  "packages.conda": {},
+  "removed": [],
+  "repodata_version": 1
+}

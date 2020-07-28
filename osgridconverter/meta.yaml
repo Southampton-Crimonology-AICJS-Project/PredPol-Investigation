@@ -1,0 +1,44 @@
+{% set name = "osgridconverter" %}
+{% set version = "0.1.3" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+# I had to manually change this URL and download the .tar.gz file from the pypi page https://pypi.org/project/OSGridConverter/#modal-close
+source:
+  url: "https://files.pythonhosted.org/packages/50/2b/1d814a7b1454f824be39fe7f47519dc89dc311e0425b6d0dc8be4d255912/OSGridConverter-0.1.3.tar.gz"
+  sha256: "a2eb1b2585c0ce696c78f2db981e797fbaf8bb9207d97ad4649865b58118aabd"
+
+build:
+  number: 0
+  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv "
+
+requirements:
+  host:
+    - pip
+    - python
+  run:
+    - python
+
+test:
+  imports:
+    - OSGridConverter
+    - OSGridConverter.cartesian
+    - OSGridConverter.mapping
+    - test
+  requires:
+    - osgridconverter
+
+about:
+  home: "https://github.com/...."
+  license: "MIT"
+  license_family: "MIT"
+  license_file: ""
+  summary: "Library to convert co-ordinates between the (UK) Ordnance Survey National Grid and latitude/longitude"
+  doc_url: ""
+  dev_url: ""
+
+extra:
+  recipe-maintainers:
+    - your-github-id-here

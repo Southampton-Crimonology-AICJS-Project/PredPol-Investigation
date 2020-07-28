@@ -1,0 +1,27 @@
+#!/bin/bash
+
+#PBS -l walltime=60:00:00
+
+INPUT=( $* )
+
+# Set up system environment ============================================================================================
+# Remove the python 2.7 installation to allow conda to load up ai-cjs and the python version within
+module unload python/2.7.5
+# Using conda for venv
+module load conda/4.4.0
+eval "$(conda shell.bash hook)"
+# activate the virtual environment with the required dependencies installed
+conda activate ai-cjs-env
+
+# ======================================================================================================================
+
+
+CODE="/home/pjg1c19/AI_CJS/ai_cjs/config.py"
+
+python "$CODE" "${INPUT[@]}"
+
+CODE="/home/pjg1c19/AI_CJS/ai_cjs/analytic_models/crim_theory_mpi.py"
+
+mpiexec -n "$CORES" python "$CODE" "${INPUT[@]}"
+
+python /home/pjg1c19/AI_CJS/ai_cjs/data_processing/gather_plot_mpi.py "${INPUT[@]}"

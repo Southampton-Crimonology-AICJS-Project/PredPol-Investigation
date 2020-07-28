@@ -1,0 +1,89 @@
+#!/bin/bash
+
+INITIALBIAS=( 10 )  # Set the initial bias thresholds
+BACKGOUND=( 30 )     # Set the background recording thresholds
+MAXRECORD=( 70 )     # Set the maximum recording thresholds
+NUMBERPER=( 5 )    # Set the average number of crimes per cell per day thresholds
+
+RUNTIME=10
+CORES=4
+SUB_GRID_N=5
+
+# PredPol convergence threshold and limit before aborting
+CONV_THRESH=0.01
+CONV_LIM=10000
+
+INIT_MODEL="fixed"
+DAILY_MODEL="gaussian"
+
+
+for IB in "${INITIALBIAS[@]}";
+do
+  for BG in "${BACKGOUND[@]}";
+  do
+    for MR in "${MAXRECORD[@]}";
+    do
+      for NP in "${NUMBERPER[@]}";
+      do
+        DAILY_CRIME=$(bc <<< "((sqrt($CORES)*$SUB_GRID_N)^2)*$NP")
+        INIT_CRIME=$(bc <<< "$DAILY_CRIME*5")
+        INPUTARR="$RUNTIME $SUB_GRID_N $INIT_MODEL $DAILY_MODEL $INIT_CRIME $DAILY_CRIME $CONV_THRESH $CONV_LIM $CORES --RepEn --RepEnMdl Proportional --EnLvl $MR --BaseReport $BG --FixPer $IB"
+        qsub /home/pjg1c19/AI_CJS/bash_pbs/paper_jobs/mutable_sub -F "$INPUTARR" -l nodes=1:ppn="$CORES"
+      done
+    done
+  done
+done
+
+INIT_MODEL="gaussian"
+DAILY_MODEL="gaussian"
+
+for BG in "${BACKGOUND[@]}";
+do
+  for MR in "${MAXRECORD[@]}";
+  do
+    for NP in "${NUMBERPER[@]}";
+    do
+      DAILY_CRIME=$(bc <<< "((sqrt($CORES)*$SUB_GRID_N)^2)*$NP")
+      INIT_CRIME=$(bc <<< "$DAILY_CRIME*5")
+      INPUTARR="$RUNTIME $SUB_GRID_N $INIT_MODEL $DAILY_MODEL $INIT_CRIME $DAILY_CRIME $CONV_THRESH $CONV_LIM $CORES --RepEn --RepEnMdl Proportional --EnLvl $MR --BaseReport $BG "
+      qsub /home/pjg1c19/AI_CJS/bash_pbs/paper_jobs/mutable_sub -F "$INPUTARR" -l nodes=1:ppn="$CORES"
+    done
+  done
+done
+
+
+read -r -p "The following scripts call the public police API multiple times and can downloads the crime data. This
+process will take some time do you want to continue? [y/N] "
+RESPONSE
+if [[ "$RESPONSE" =~ ^([yY][eE][sS]|[yY])$ ]]
+then
+    pass
+else
+    exit
+fi
+
+
+INIT_MODEL="real_fake"
+DAILY_MODEL="real_fake"
+
+DAILY_CRIME=0
+INIT_CRIME=0
+
+HACKNEY="51.541321,-0.061034"
+MEDWEY="51.383208,0.541687"
+LOCATIONS=( "$HACKNEY" "$MEDWEY" )
+
+for BG in "${BACKGOUND[@]}";
+do
+  for MR in "${MAXRECORD[@]}";
+  do
+    for LOC in "${LOCATIONS[@]}"
+    do
+      MONTHARR="1,2,3,4,5,6"
+      YEARARR="2019"
+      LATLONG=$LOC
+      INPUTARR="$RUNTIME $SUB_GRID_N $INIT_MODEL $DAILY_MODEL $INIT_CRIME $DAILY_CRIME $CONV_THRESH $CONV_LIM $CORES --RepEn --RepEnMdl Proportional --EnLvl $MR --BaseReport $BG --Lat_Long $LATLONG --Months $MONTHARR --Years $YEARARR"
+      /home/pjg1c19/AI_CJS/bash_pbs/real_fake/make_api_call "$INPUTARR"
+    done
+  done
+done

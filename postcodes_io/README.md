@@ -1,0 +1,1 @@
+This is a python package from PyPi available under an MIT licence

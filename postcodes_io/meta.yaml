@@ -1,0 +1,40 @@
+{% set name = "postcodes_io" %}
+{% set version = "0.1.0" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
+  sha256: "6f0679330a54021633aa351570598383a837da1a29fc28d36402b4192fca33ad"
+
+build:
+  number: 0
+  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv "
+
+requirements:
+  host:
+    - pip
+    - python
+    - requests >=2.10.0
+  run:
+    - python
+    - requests >=2.10.0
+
+test:
+  imports:
+    - postcodes_io
+
+about:
+  home: "https://github.com/jimmyho/postcodes_io"
+  license: "MIT"
+  license_family: "MIT"
+  license_file: ""
+  summary: "Python client to connect to Postcodes.io API"
+  doc_url: ""
+  dev_url: ""
+
+extra:
+  recipe-maintainers:
+    - your-github-id-here

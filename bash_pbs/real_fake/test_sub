@@ -1,0 +1,60 @@
+#!/bin/bash
+
+#PBS -N test-sub
+#PBS -l walltime=00:30:00
+#PBS -e stderr-$PBS_JOBID.log
+#PBS -o stdout-$PBS_JOBID.log
+
+# CORES tells the code how many processes it has here we set it to the number of processes on one node (16, set by ppn)
+# This version of the code requires a square number of processes.
+CORES="$PBS_NUM_PPN"
+# Set up the location of AI_CJS on the system, be aware "config.py" also needs editing to set the data locations.
+PATH_TO_AI_CJS="/home/pjg1c19/AI_CJS/"
+
+
+# Set up system environment ============================================================================================
+# Move to the AI_CJS directory
+cd "$PATH_TO_AI_CJS" || exit
+# Remove the python 2.7 installation to allow conda to load up ai-cjs and the python version within
+module unload python/2.7.5
+# Using conda for venv
+module load conda/4.4.0
+# activate the virtual environment with the required dependencies installed
+source activate ai-cjs-env
+# ======================================================================================================================
+
+
+# Use these to set the runtime (days) and number of grids per core =====================================================
+RUNTIMEG=20
+SUB_GRID_N_G="$5"
+# ======================================================================================================================
+
+# Running parameters====================================================================================================
+RUNTIME=$RUNTIMEG
+SUB_GRID_N=$SUB_GRID_N_G
+INIT_MODEL="real_fake"
+DAILY_MODEL="real_fake"
+INIT_CRIME=0 # not used in real_fake
+DAILY_CRIME=0 # not used in real_fake
+# PredPol convergence threshold and limit before aborting
+CONV_THRESH=0.01
+CONV_LIM=10000
+# ======================================================================================================================
+
+CODE="/home/pjg1c19/AI_CJS/ai_cjs/config.py"
+
+MONTHARR="$1"
+YEARARR="$2"
+LATLONG="$3"
+
+INPUTARR=( "$RUNTIME" "$SUB_GRID_N" "$INIT_MODEL" "$DAILY_MODEL" "$INIT_CRIME" "$DAILY_CRIME" "$CONV_THRESH"
+"$CONV_LIM" "$CORES" "--RepEn" "--RepEnMdl" "Proportional" "--Lat_Long" "$LATLONG"
+"--Months" "$MONTHARR" "--Years" "$YEARARR")
+
+python "$CODE" "${INPUTARR[@]}"
+
+CODE="/home/pjg1c19/AI_CJS/ai_cjs/analytic_models/crim_theory_mpi.py"
+
+mpiexec -n "$CORES" python "$CODE" "${INPUTARR[@]}"
+
+python /home/pjg1c19/AI_CJS/ai_cjs/data_processing/gather_plot_mpi.py "${INPUTARR[@]}"

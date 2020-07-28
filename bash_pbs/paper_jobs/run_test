@@ -1,0 +1,35 @@
+#!/bin/bash
+
+INITIALBIAS=( 2 10 )  # Set the initial bias thresholds
+BACKGOUND=( 20 30 )     # Set the background recording thresholds
+MAXRECORD=( 50 70 )     # Set the maximum recording thresholds
+NUMBERPER=( 5 )    # Set the average number of crimes per cell per day thresholds
+
+
+RUNTIME=50
+CORES=16
+SUB_GRID_N=10
+
+# PredPol convergence threshold and limit before aborting
+CONV_THRESH=0.01
+CONV_LIM=10000
+
+INIT_MODEL="fixed"
+DAILY_MODEL="gaussian"
+
+for IB in "${INITIALBIAS[@]}";
+do
+  for BG in "${BACKGOUND[@]}";
+  do
+    for MR in "${MAXRECORD[@]}";
+    do
+      for NP in "${NUMBERPER[@]}";
+      do
+        DAILY_CRIME=$(bc <<< "((sqrt($CORES)*$SUB_GRID_N)^2)*$NP")
+        INIT_CRIME=$(bc <<< "$DAILY_CRIME*5")
+        INPUTARR="$RUNTIME $SUB_GRID_N $INIT_MODEL $DAILY_MODEL $INIT_CRIME $DAILY_CRIME $CONV_THRESH $CONV_LIM $CORES --RepEn --RepEnMdl Proportional --EnLvl $MR --BaseReport $BG --FixPer $IB"
+        qsub /home/pjg1c19/AI_CJS/bash_pbs/paper_jobs/mutable_sub -F "$INPUTARR" -l nodes=1:ppn="$CORES"
+      done
+    done
+  done
+done
