@@ -1,4 +1,4 @@
-# AI-CJS [![DOI](https://zenodo.org/badge/283162420.svg)](https://zenodo.org/badge/latestdoi/283162420)
+# AI-CJS [![DOI](https://zenodo.org/badge/319669776.svg)](https://zenodo.org/badge/latestdoi/319669776)
 
 ### Artificial Intelligence in the criminal justice system
 
