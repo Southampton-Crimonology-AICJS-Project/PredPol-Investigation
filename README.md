@@ -4,7 +4,7 @@
 
 Sharepoint: https://sotonac.sharepoint.com/teams/AI-CJS
 
-GitHub: https://github.com/Southampton-RSG/AI_CJS
+GitHub: https://github.com/Southampton-Crimonology-AICJS-Project/PredPol-Investigation
 
 This project aims to:
 
